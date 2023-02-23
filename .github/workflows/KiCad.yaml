@@ -1,0 +1,67 @@
+name: "KiCAD Action"
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  quick:
+    name: "Quick Start (action)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get repo
+        uses: actions/checkout@v3
+
+      - name: Run KiBot
+        uses: INTI-CMNB/KiBot@v2_k6
+        with:
+          quickstart: YES
+
+      - name: Zip It
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r production.zip Generated
+      
+      - name: Rename JLC Package
+        run: cp Generated/Manufacturers/*JLCPCB.zip jlcpcb.zip
+
+      - name: Rename ibom
+        run: cp Generated/Assembly/*ibom.html assembly-ibom.html
+
+      - name: Rename 3D View
+        run: cp Generated/3D/*30deg.png topview.png
+
+      - name: Rename BoM
+        run: cp Generated/BoM/Generic/*.csv bom.csv
+
+      - name: Make Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: | 
+                production.zip
+                jlcpcb.zip
+                assembly-ibom.html
+                topview.png
+                bom.csv
+          
+      - name: Publish commit hash to mqtt broker
+        uses: juhrlass/mqtt-action@master
+        with:
+          protocol: mqtt
+          host: public.mqtt.gruppe.ai
+          port: 1883
+          topic: "skunkforce/CI/KiCAD/${{ github.repository }}"
+          message: '{ 
+            "action" : "KiCAD CI-Task successfully run!",
+            "repo" : "${{ github.repository }}",            
+            "tag" : "${{ github.ref_name }}",
+            "actor" : "${{ github.actor }}",
+            "commit" : "${{ github.event.head_commit.message }}",
+            "picture" : "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/topview.png",
+            "bom" : "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/bom.csv",
+            "assembly" : "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/assembly-ibom.html",
+            "jlcpcb-pack" : "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/jlcpcb.zip",
+            "download" : "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/production.zip"
+          }'
