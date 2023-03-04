@@ -545,7 +545,7 @@
     (property "Footprint" "b099:749013011A" (id 2) (at 135.89 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.we-online.com/components/products/datasheet/749013011A.pdf" (id 3) (at 118.11 105.41 0)
+    (property "Datasheet" "https://www.bourns.com/docs/Product-Datasheets/PT61017PEL.pdf" (id 3) (at 118.11 105.41 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Digi-Key_PN" "732-7063-1-ND" (id 4) (at 135.89 96.52 0)
