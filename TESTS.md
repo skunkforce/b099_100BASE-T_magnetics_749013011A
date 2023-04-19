@@ -1,12 +1,12 @@
-# test 1
+# 100Mbit communication test
 ## setup
-Describe your test setup
+```mermaid
+graph LR
+    PC -- usb --> b051
+    b051 --> b016
+    b016 --> b099
+    b099 --> b010
+    b010 --ethernet --> internet
+```
 ## results
-Describe your results
-
-
-# test 2
-## setup
-Describe your test setup
-## results
-Describe your results
+The PC was able to communicate with the internet through the chain.
